@@ -5,14 +5,14 @@ namespace BuberDiner.Infrastructure.Persistence;
 
 public class UserRepository : IUserRepository
 {
-    private readonly List<User> _users = new();
+    private static readonly List<User> Users = new();
     public void Add(User user)
     {
-        _users.Add(user);
+        Users.Add(user);
     }
 
     public User? GetByEmail(string email)
     {
-        return _users.SingleOrDefault(user => user.Email == email);
+        return Users.SingleOrDefault(user => user.Email == email);
     }
 }
