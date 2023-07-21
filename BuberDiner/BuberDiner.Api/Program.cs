@@ -1,17 +1,20 @@
+using BuberDiner.Api.Middleware;
 using BuberDiner.Application;
 using BuberDiner.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 {
-    builder.Services.AddApplication();
-    builder.Services.AddInfrastructure(builder.Configuration);
-    builder.Services.AddControllers();
+    _ = builder.Services.AddApplication();
+    _ = builder.Services.AddInfrastructure(builder.Configuration);
+    _ = builder.Services.AddControllers();
 }
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
-app.MapControllers();
-
-app.Run();
+{
+    _ = app.UseMiddleware<ErrorHandlingMiddleware>();
+    _ = app.UseHttpsRedirection();
+    _ = app.MapControllers();
+    app.Run();
+}
