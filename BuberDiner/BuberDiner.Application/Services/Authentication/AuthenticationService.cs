@@ -31,9 +31,9 @@ public class AuthenticationService : IAuthenticationService
 
         _userRepository.Add(user);
 
-        var token = _jwtTokenGenerator.GenerateToken(user.Id, firstName, lastName);
+        var token = _jwtTokenGenerator.GenerateToken(user);
 
-        return new AuthenticationResult(user.Id, firstName, lastName, email, token);
+        return new AuthenticationResult(user, token);
     }
 
     public AuthenticationResult Login(string email, string password)
@@ -50,7 +50,7 @@ public class AuthenticationService : IAuthenticationService
             throw new Exception("Invalid password");
         }
 
-        var token = _jwtTokenGenerator.GenerateToken(user.Id, user.FirstName, user.LastName);
-        return new AuthenticationResult(user.Id, user.FirstName, user.LastName, email, token);
+        var token = _jwtTokenGenerator.GenerateToken(user);
+        return new AuthenticationResult(user, token);
     }
 }
