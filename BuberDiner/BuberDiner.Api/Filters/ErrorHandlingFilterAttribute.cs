@@ -12,9 +12,9 @@ public class ErrorHandlingFilterAttribute : ExceptionFilterAttribute
         var exception = context.Exception;
 
         var problemDetails = new ProblemDetails {
+            Type = "https://tools.ietf.org/html/rfc7231#section-6.6.1",
             Title = "An error occured with filter",
             Status = (int)HttpStatusCode.InternalServerError,
-            Detail = exception.StackTrace
         };
 
         context.Result = new ObjectResult(
