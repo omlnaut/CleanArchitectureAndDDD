@@ -1,17 +1,24 @@
+using BuberDiner.Api.Errors;
 using BuberDiner.Application;
 using BuberDiner.Infrastructure;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 {
-    builder.Services.AddApplication();
-    builder.Services.AddInfrastructure(builder.Configuration);
-    builder.Services.AddControllers();
+    _ = builder.Services.AddApplication();
+    _ = builder.Services.AddInfrastructure(builder.Configuration);
+    // _ = builder.Services.AddControllers(options => options.Filters.Add<ErrorHandlingFilterAttribute>());
+    _ = builder.Services.AddControllers();
+    _ = builder.Services.AddSingleton<ProblemDetailsFactory, BuberDinerProblemDetailsFactory>();
 }
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
-app.MapControllers();
-
-app.Run();
+{
+    // _ = app.UseMiddleware<ErrorHandlingMiddleware>();
+    _ = app.UseExceptionHandler("/error");
+    _ = app.UseHttpsRedirection();
+    _ = app.MapControllers();
+    app.Run();
+}
