@@ -24,15 +24,22 @@ public class AuthenticationController : ControllerBase
             request.Email,
             request.Password);
 
-        var response = new AuthenticationResponse
-        (
-            authResult.User.Id,
-            authResult.User.FirstName,
-            authResult.User.LastName,
-            authResult.User.Email,
-            authResult.Token
+        return authResult.MatchFirst(
+            authResult => Ok(MapAuthResponse(authResult)),
+            firstError => Problem(statusCode: StatusCodes.Status409Conflict, title: firstError.Description)
         );
-        return Ok(response);
+    }
+
+    private static AuthenticationResponse MapAuthResponse(AuthenticationResult result)
+    {
+        return new AuthenticationResponse
+                    (
+                        result.User.Id,
+                        result.User.FirstName,
+                        result.User.LastName,
+                        result.User.Email,
+                        result.Token
+                    );
     }
 
     [HttpPost("login")]
