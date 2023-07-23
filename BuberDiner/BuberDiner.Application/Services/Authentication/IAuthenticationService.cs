@@ -1,10 +1,10 @@
 using BuberDiner.Application.Common.Errors;
-using OneOf;
+using FluentResults;
 
 namespace BuberDiner.Application.Services.Authentication;
 
 public interface IAuthenticationService
 {
-    public OneOf<AuthenticationResult, IError> Register(string firstName, string lastName, string email, string password);
+    public Result<AuthenticationResult> Register(string firstName, string lastName, string email, string password);
     public AuthenticationResult Login(string email, string password);
 }

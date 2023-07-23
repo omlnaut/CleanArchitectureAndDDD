@@ -1,6 +1,7 @@
 using BuberDiner.Contracts.Authentication;
 using BuberDiner.Application.Services.Authentication;
 using Microsoft.AspNetCore.Mvc;
+using BuberDiner.Application.Common.Errors;
 
 namespace BuberDiner.Api.Controllers;
 
@@ -24,10 +25,19 @@ public class AuthenticationController : ControllerBase
             request.Email,
             request.Password);
 
-        return registerResult.Match(
-            authResult => Ok(MapAuthResult(authResult)),
-            error => Problem(statusCode: (int)error.StatusCode, title: error.Message)
-        );
+        if (registerResult.IsSuccess)
+        {
+            return Ok(MapAuthResult(registerResult.Value));
+        }
+
+        var firstError = registerResult.Errors.First();
+
+        if (firstError is DuplicateEmailError)
+        {
+            return Conflict("Email already exists");
+        }
+
+        return Problem();
     }
 
     private static AuthenticationResponse MapAuthResult(AuthenticationResult authResult)
