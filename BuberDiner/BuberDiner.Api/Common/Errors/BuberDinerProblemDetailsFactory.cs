@@ -1,14 +1,12 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+using BuberDiner.Api.Common.Http;
+using ErrorOr;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 
-namespace BuberDiner.Api.Errors;
+namespace BuberDiner.Api.Common.Errors;
 
 public class BuberDinerProblemDetailsFactory : ProblemDetailsFactory
 {
@@ -33,7 +31,8 @@ public class BuberDinerProblemDetailsFactory : ProblemDetailsFactory
     {
         statusCode ??= 500;
 
-        var problemDetails = new ProblemDetails {
+        var problemDetails = new ProblemDetails
+        {
             Status = statusCode,
             Title = title,
             Type = type,
@@ -59,7 +58,8 @@ public class BuberDinerProblemDetailsFactory : ProblemDetailsFactory
 
         statusCode ??= 400;
 
-        var problemDetails = new ValidationProblemDetails(modelStateDictionary) {
+        var problemDetails = new ValidationProblemDetails(modelStateDictionary)
+        {
             Status = statusCode,
             Type = type,
             Detail = detail,
@@ -93,6 +93,10 @@ public class BuberDinerProblemDetailsFactory : ProblemDetailsFactory
             problemDetails.Extensions["traceId"] = traceId;
         }
 
-        problemDetails.Extensions.Add("customProperty", "customValue");
+        var errors = httpContext?.Items[HttpContextItemKeys.Errors] as List<Error>;
+        if (errors is not null)
+        {
+            problemDetails.Extensions.Add("errorCodes", errors.Select(e => e.Code));
+        }
     }
 }
