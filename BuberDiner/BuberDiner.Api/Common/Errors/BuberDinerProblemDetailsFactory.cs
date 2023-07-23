@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -33,7 +29,8 @@ public class BuberDinerProblemDetailsFactory : ProblemDetailsFactory
     {
         statusCode ??= 500;
 
-        var problemDetails = new ProblemDetails {
+        var problemDetails = new ProblemDetails
+        {
             Status = statusCode,
             Title = title,
             Type = type,
@@ -59,7 +56,8 @@ public class BuberDinerProblemDetailsFactory : ProblemDetailsFactory
 
         statusCode ??= 400;
 
-        var problemDetails = new ValidationProblemDetails(modelStateDictionary) {
+        var problemDetails = new ValidationProblemDetails(modelStateDictionary)
+        {
             Status = statusCode,
             Type = type,
             Detail = detail,
