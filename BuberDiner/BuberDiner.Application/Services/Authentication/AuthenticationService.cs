@@ -17,7 +17,7 @@ public class AuthenticationService : IAuthenticationService
         _userRepository = userRepository;
     }
 
-    public OneOf<AuthenticationResult, DuplicateEmailError> Register(string firstName, string lastName, string email, string password)
+    public OneOf<AuthenticationResult, IError> Register(string firstName, string lastName, string email, string password)
     {
         if (_userRepository.GetByEmail(email) is not null)
         {

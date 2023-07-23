@@ -26,7 +26,7 @@ public class AuthenticationController : ControllerBase
 
         return registerResult.Match(
             authResult => Ok(MapAuthResult(authResult)),
-            error => Problem(statusCode: StatusCodes.Status409Conflict, title: "Email already exists")
+            error => Problem(statusCode: (int)error.StatusCode, title: error.Message)
         );
     }
 
