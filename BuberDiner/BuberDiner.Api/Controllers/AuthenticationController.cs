@@ -1,12 +1,12 @@
 using BuberDiner.Contracts.Authentication;
 using BuberDiner.Application.Services.Authentication;
+using BuberDiner.Domain.Common.Errors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BuberDiner.Api.Controllers;
 
-[ApiController]
 [Route("auth")]
-public class AuthenticationController : ControllerBase
+public class AuthenticationController : ApiController
 {
     private readonly IAuthenticationService _authenticationService;
 
@@ -24,15 +24,22 @@ public class AuthenticationController : ControllerBase
             request.Email,
             request.Password);
 
-        var response = new AuthenticationResponse
-        (
-            authResult.User.Id,
-            authResult.User.FirstName,
-            authResult.User.LastName,
-            authResult.User.Email,
-            authResult.Token
+        return authResult.Match(
+            authResult => Ok(MapAuthResponse(authResult)),
+            errors => Problem(errors)
         );
-        return Ok(response);
+    }
+
+    private static AuthenticationResponse MapAuthResponse(AuthenticationResult result)
+    {
+        return new AuthenticationResponse
+                    (
+                        result.User.Id,
+                        result.User.FirstName,
+                        result.User.LastName,
+                        result.User.Email,
+                        result.Token
+                    );
     }
 
     [HttpPost("login")]
@@ -42,15 +49,16 @@ public class AuthenticationController : ControllerBase
             request.Email,
             request.Password);
 
-        var response = new AuthenticationResponse
-        (
-            authResult.User.Id,
-            authResult.User.FirstName,
-            authResult.User.LastName,
-            authResult.User.Email,
-            authResult.Token
+        if (authResult.IsError && authResult.FirstError == Errors.Authentication.InvalidCredentials)
+        {
+            return Problem(
+                statusCode: StatusCodes.Status401Unauthorized,
+                detail: authResult.FirstError.Description);
+        }
 
+        return authResult.Match(
+            authResult => Ok(MapAuthResponse(authResult)),
+            errors => Problem(errors)
         );
-        return Ok(response);
     }
 }

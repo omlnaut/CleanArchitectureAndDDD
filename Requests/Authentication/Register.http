@@ -18,6 +18,6 @@ POST {{host}}/auth/login
 Content-Type: application/json
 
 {
-    "email": "a@b.de",
+    "email": "aa@b.de",
     "password": "12345678"
 }
