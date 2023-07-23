@@ -1,3 +1,4 @@
+using BuberDiner.Api.Common.Http;
 using ErrorOr;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +9,7 @@ public class ApiController : ControllerBase
 {
     protected IActionResult Problem(List<Error> errors)
     {
+        HttpContext.Items.Add(HttpContextItemKeys.Errors, errors);
         var firstError = errors.First();
 
         var statusCode = firstError.Type switch

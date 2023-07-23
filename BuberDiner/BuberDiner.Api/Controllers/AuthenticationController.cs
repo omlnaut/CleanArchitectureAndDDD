@@ -1,5 +1,6 @@
 using BuberDiner.Contracts.Authentication;
 using BuberDiner.Application.Services.Authentication;
+using BuberDiner.Domain.Common.Errors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BuberDiner.Api.Controllers;
@@ -47,6 +48,13 @@ public class AuthenticationController : ApiController
         var authResult = _authenticationService.Login(
             request.Email,
             request.Password);
+
+        if (authResult.IsError && authResult.FirstError == Errors.Authentication.InvalidCredentials)
+        {
+            return Problem(
+                statusCode: StatusCodes.Status401Unauthorized,
+                detail: authResult.FirstError.Description);
+        }
 
         return authResult.Match(
             authResult => Ok(MapAuthResponse(authResult)),

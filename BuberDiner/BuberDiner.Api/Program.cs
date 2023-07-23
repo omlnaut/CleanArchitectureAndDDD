@@ -1,4 +1,4 @@
-using BuberDiner.Api.Errors;
+using BuberDiner.Api.Common.Errors;
 using BuberDiner.Application;
 using BuberDiner.Infrastructure;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
