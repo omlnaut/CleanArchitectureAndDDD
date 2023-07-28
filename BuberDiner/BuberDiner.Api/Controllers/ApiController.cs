@@ -12,11 +12,12 @@ public class ApiController : ControllerBase
         HttpContext.Items.Add(HttpContextItemKeys.Errors, errors);
         var firstError = errors.First();
 
-        var statusCode = firstError.Type switch
-        {
+        var statusCode = firstError.Type switch {
             ErrorType.Conflict => StatusCodes.Status409Conflict,
             ErrorType.Validation => StatusCodes.Status400BadRequest,
             ErrorType.NotFound => StatusCodes.Status404NotFound,
+            ErrorType.Failure => throw new NotImplementedException(),
+            ErrorType.Unexpected => throw new NotImplementedException(),
             _ => StatusCodes.Status500InternalServerError
         };
 
