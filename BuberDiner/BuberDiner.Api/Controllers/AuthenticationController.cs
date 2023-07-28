@@ -1,28 +1,28 @@
 using BuberDiner.Contracts.Authentication;
-using BuberDiner.Application.Services.Authentication;
 using BuberDiner.Domain.Common.Errors;
 using Microsoft.AspNetCore.Mvc;
+using MediatR;
+using BuberDiner.Application.Authentication.Commands.Register;
+using BuberDiner.Application.Authentication.Queries.Login;
+using BuberDiner.Application.Authentication.Common;
 
 namespace BuberDiner.Api.Controllers;
 
 [Route("auth")]
 public class AuthenticationController : ApiController
 {
-    private readonly IAuthenticationService _authenticationService;
+    private readonly ISender _mediator;
 
-    public AuthenticationController(IAuthenticationService authenticationService)
+    public AuthenticationController(ISender mediator)
     {
-        _authenticationService = authenticationService;
+        _mediator = mediator;
     }
 
     [HttpPost("register")]
-    public IActionResult Register(RegisterRequest request)
+    public async Task<IActionResult> Register(RegisterRequest request)
     {
-        var authResult = _authenticationService.Register(
-            request.FirstName,
-            request.LastName,
-            request.Email,
-            request.Password);
+        var command = new RegisterCommand(request.FirstName, request.LastName, request.Email, request.Password);
+        var authResult = await _mediator.Send(command);
 
         return authResult.Match(
             authResult => Ok(MapAuthResponse(authResult)),
@@ -43,11 +43,10 @@ public class AuthenticationController : ApiController
     }
 
     [HttpPost("login")]
-    public IActionResult Login(LoginRequest request)
+    public async Task<IActionResult> Login(LoginRequest request)
     {
-        var authResult = _authenticationService.Login(
-            request.Email,
-            request.Password);
+        var command = new LoginQuery(request.Email, request.Password);
+        var authResult = await _mediator.Send(command);
 
         if (authResult.IsError && authResult.FirstError == Errors.Authentication.InvalidCredentials)
         {
