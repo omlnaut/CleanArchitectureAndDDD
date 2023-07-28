@@ -1,32 +1,33 @@
+using BuberDiner.Application.Authentication.Common;
 using BuberDiner.Application.Common.Interfaces.Authentication;
 using BuberDiner.Application.Common.Interfaces.Persistence;
-using BuberDiner.Application.Services.Authentication.Common;
 using BuberDiner.Domain.Common.Errors;
 using ErrorOr;
+using MediatR;
 
-namespace BuberDiner.Application.Services.Authentication.Queries;
+namespace BuberDiner.Application.Authentication.Queries.Login;
 
-public class AuthenticationQueryService : IAuthenticationQueryService
+public class LoginCommandHandler : IRequestHandler<LoginCommand, ErrorOr<AuthenticationResult>>
 {
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
     private readonly IUserRepository _userRepository;
 
-    public AuthenticationQueryService(IJwtTokenGenerator jwtTokenGenerator, IUserRepository userRepository)
+    public LoginCommandHandler(IUserRepository userRepository, IJwtTokenGenerator jwtTokenGenerator)
     {
-        _jwtTokenGenerator = jwtTokenGenerator;
         _userRepository = userRepository;
+        _jwtTokenGenerator = jwtTokenGenerator;
     }
 
-    public ErrorOr<AuthenticationResult> Login(string email, string password)
+    public async Task<ErrorOr<AuthenticationResult>> Handle(LoginCommand command, CancellationToken cancellationToken)
     {
-        var user = _userRepository.GetByEmail(email);
+        var user = _userRepository.GetByEmail(command.Email);
 
         if (user is null)
         {
             return Errors.Authentication.InvalidCredentials;
         }
 
-        if (user.Password != password)
+        if (user.Password != command.Password)
         {
             return Errors.Authentication.InvalidCredentials;
         }
