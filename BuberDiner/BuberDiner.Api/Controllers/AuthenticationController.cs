@@ -1,16 +1,17 @@
 using BuberDiner.Contracts.Authentication;
-using BuberDiner.Application.Services.Authentication;
 using BuberDiner.Domain.Common.Errors;
 using Microsoft.AspNetCore.Mvc;
+using BuberDiner.Application.Services.Authentication.Common;
+using BuberDiner.Application.Services.Authentication.Queries;
 
 namespace BuberDiner.Api.Controllers;
 
 [Route("auth")]
 public class AuthenticationController : ApiController
 {
-    private readonly IAuthenticationService _authenticationService;
+    private readonly IAuthenticationQueryService _authenticationService;
 
-    public AuthenticationController(IAuthenticationService authenticationService)
+    public AuthenticationController(IAuthenticationQueryService authenticationService)
     {
         _authenticationService = authenticationService;
     }
