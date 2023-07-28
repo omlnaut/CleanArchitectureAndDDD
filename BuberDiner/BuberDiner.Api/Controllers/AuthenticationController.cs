@@ -45,7 +45,7 @@ public class AuthenticationController : ApiController
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginRequest request)
     {
-        var command = new LoginCommand(request.Email, request.Password);
+        var command = new LoginQuery(request.Email, request.Password);
         var authResult = await _mediator.Send(command);
 
         if (authResult.IsError && authResult.FirstError == Errors.Authentication.InvalidCredentials)
