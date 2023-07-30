@@ -21,12 +21,15 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand, ErrorOr<A
 
     public async Task<ErrorOr<AuthenticationResult>> Handle(RegisterCommand command, CancellationToken cancellationToken)
     {
+        await Task.CompletedTask;
+
         if (_userRepository.GetByEmail(command.Email) is not null)
         {
             return Errors.User.DuplicateEmail;
         }
 
-        var user = new User {
+        var user = new User
+        {
             FirstName = command.FirstName,
             LastName = command.LastName,
             Email = command.Email,

@@ -1,3 +1,5 @@
+#pragma warning disable IDE0052 // Remove unread private members
+
 using System.Diagnostics;
 using BuberDiner.Api.Common.Http;
 using ErrorOr;
