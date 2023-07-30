@@ -7,12 +7,12 @@ using MediatR;
 
 namespace BuberDiner.Application.Authentication.Queries.Login;
 
-public class LoginCommandHandler : IRequestHandler<LoginQuery, ErrorOr<AuthenticationResult>>
+public class LoginQueryHandler : IRequestHandler<LoginQuery, ErrorOr<AuthenticationResult>>
 {
     private readonly IJwtTokenGenerator _jwtTokenGenerator;
     private readonly IUserRepository _userRepository;
 
-    public LoginCommandHandler(IUserRepository userRepository, IJwtTokenGenerator jwtTokenGenerator)
+    public LoginQueryHandler(IUserRepository userRepository, IJwtTokenGenerator jwtTokenGenerator)
     {
         _userRepository = userRepository;
         _jwtTokenGenerator = jwtTokenGenerator;
@@ -20,6 +20,8 @@ public class LoginCommandHandler : IRequestHandler<LoginQuery, ErrorOr<Authentic
 
     public async Task<ErrorOr<AuthenticationResult>> Handle(LoginQuery command, CancellationToken cancellationToken)
     {
+        await Task.CompletedTask;
+
         var user = _userRepository.GetByEmail(command.Email);
 
         if (user is null)
