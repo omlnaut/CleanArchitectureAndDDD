@@ -2,7 +2,7 @@
 
 Following this tutorial: https://www.youtube.com/playlist?list=PLzYkqgWkHPKBcDIP5gzLfASkQyTdy0t4k
 
-Continue at: https://www.youtube.com/watch?v=FXP3PQ03fa0&list=PLzYkqgWkHPKBcDIP5gzLfASkQyTdy0t4k&index=8
+Continue at: https://youtu.be/FXP3PQ03fa0?list=PLzYkqgWkHPKBcDIP5gzLfASkQyTdy0t4k&t=631
 
 Setup on new machine:
 - user secrets for development need to be added via:
