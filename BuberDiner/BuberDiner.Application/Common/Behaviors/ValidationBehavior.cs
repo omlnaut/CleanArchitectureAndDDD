@@ -1,23 +1,41 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using BuberDiner.Application.Authentication.Commands.Register;
-using BuberDiner.Application.Authentication.Common;
 using ErrorOr;
+using FluentValidation;
 using MediatR;
 
 namespace BuberDiner.Application.Common.Behaviors;
 
-public class ValidationBehavior : IPipelineBehavior<RegisterCommand, ErrorOr<AuthenticationResult>>
+public class ValidationBehavior<TRequest, TResult> : IPipelineBehavior<TRequest, TResult>
+    where TRequest : IRequest<TResult>
+    where TResult : IErrorOr
 {
-    public async Task<ErrorOr<AuthenticationResult>> Handle(
-        RegisterCommand request,
-        RequestHandlerDelegate<ErrorOr<AuthenticationResult>> next,
+    private readonly IValidator<TRequest>? _validator;
+
+    public ValidationBehavior(IValidator<TRequest>? validator = null)
+    {
+        _validator = validator;
+    }
+
+    public async Task<TResult> Handle(
+        TRequest request,
+        RequestHandlerDelegate<TResult> next,
         CancellationToken cancellationToken)
     {
-        var result = await next();
+        if (_validator == null)
+        {
+            return await next();
+        }
 
-        return result;
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+
+        if (validationResult.IsValid)
+        {
+            return await next();
+        }
+
+        var errors = validationResult.Errors.ConvertAll(validationFailure => Error.Validation(
+            validationFailure.PropertyName,
+            validationFailure.ErrorMessage));
+
+        return (dynamic)errors;
     }
 }
