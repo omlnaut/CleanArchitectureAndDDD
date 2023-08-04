@@ -1,25 +1,30 @@
-using BuberDiner.Application.Authentication.Commands.Register;
-using BuberDiner.Application.Authentication.Common;
 using ErrorOr;
 using FluentValidation;
 using MediatR;
 
 namespace BuberDiner.Application.Common.Behaviors;
 
-public class ValidationBehavior : IPipelineBehavior<RegisterCommand, ErrorOr<AuthenticationResult>>
+public class ValidationBehavior<TRequest, TResult> : IPipelineBehavior<TRequest, TResult>
+    where TRequest : IRequest<TResult>
+    where TResult : IErrorOr
 {
-    private readonly IValidator<RegisterCommand> _validator;
+    private readonly IValidator<TRequest>? _validator;
 
-    public ValidationBehavior(IValidator<RegisterCommand> validator)
+    public ValidationBehavior(IValidator<TRequest>? validator = null)
     {
         _validator = validator;
     }
 
-    public async Task<ErrorOr<AuthenticationResult>> Handle(
-        RegisterCommand request,
-        RequestHandlerDelegate<ErrorOr<AuthenticationResult>> next,
+    public async Task<TResult> Handle(
+        TRequest request,
+        RequestHandlerDelegate<TResult> next,
         CancellationToken cancellationToken)
     {
+        if (_validator == null)
+        {
+            return await next();
+        }
+
         var validationResult = await _validator.ValidateAsync(request, cancellationToken);
 
         if (validationResult.IsValid)
@@ -31,6 +36,6 @@ public class ValidationBehavior : IPipelineBehavior<RegisterCommand, ErrorOr<Aut
             validationFailure.PropertyName,
             validationFailure.ErrorMessage));
 
-        return errors;
+        return (dynamic)errors;
     }
 }
